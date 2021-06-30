@@ -42,12 +42,37 @@ const Persons = (props) => {
 
 
 
+const Notification = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+
+    return (
+        <div className="notification">
+            {message}
+        </div>
+    )
+}
+
+const Error = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+
+    return (
+        <div className="error">
+            {message}
+        </div>
+    )
+}
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
     const handleButton = (event) => {
         event.preventDefault()
@@ -63,38 +88,80 @@ const App = () => {
                             ...response.data
                                 .find(element => element.name === person.name), number: newNumber
                         })
-                            .then(
+                            .then(() => {
                                 setPersons(persons.filter(p => p.name !== newName).concat({
                                     name: newName,
                                     number: newNumber
 
                                 }))
-                            )
+                                setMessage(
+                                    `'${newName}' has been edited on the phonebook`
+                                )
+                                setTimeout(() => {
+                                    setMessage(null)
+                                }, 5000)
+                            }
+                            ).catch(error => {
+                                setErrorMessage(
+                                    `'${newName}' was already removed from server`
+                                )
+                                setTimeout(() => {
+                                    setErrorMessage(null)
+                                }, 5000)
+                            })
                     })
                 } else {
                     personsService.updatePerson({ ...person, number: newNumber })
-                    .then(
-                        setPersons(persons.filter(p => p.name !== newName).concat({
-                            name: newName,
-                            number: newNumber
+                        .then(() => {
+                            setPersons(persons.filter(p => p.name !== newName).concat({
+                                name: newName,
+                                number: newNumber
 
-                        }))
-                    )
-                }
+                            }))
+                            setMessage(
+                                `'${newName}' has been edited on the phonebook`
+                            )
+                            setTimeout(() => {
+                                setMessage(null)
+                            }, 5000)
+                        }
+                        ).catch(error => {
+                            setErrorMessage(
+                                `'${newName}' was already removed from server`
+                            )
+                            setTimeout(() => {
+                                setErrorMessage(null)
+                            }, 5000)
+                        })
 
-
+                    }
             }
+
         } else {
             personsService.addPerson({
                 name: newName,
                 number: newNumber
-            }).then(
+            }).then(() => {
                 setPersons(persons.concat({
                     name: newName,
                     number: newNumber
 
                 }))
-            )
+
+                setMessage(
+                    `'${newName}' has been added to the phonenook`
+                )
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
+            }).catch(error => {
+                setErrorMessage(
+                    `'${newName}' was already removed from server`
+                )
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000)
+            })
 
         }
 
@@ -118,13 +185,25 @@ const App = () => {
                 personsService.deletePerson(person).then(
                     setPersons(persons.filter(p => p.name !== person.name))
                 )
+                setMessage(
+                    `'${person.name}' has been deleted from phonebook`
+                )
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
             } else {
                 personsService.getAll().then(response => {
                     personsService.deletePerson(response.data
                         .find(element => element.name === person.name))
-                        .then(
+                        .then(() => {
                             setPersons(persons.filter(p => p.name !== person.name))
-                        )
+                            setMessage(
+                                `'${person.name}' has been deleted from phonebook`
+                            )
+                            setTimeout(() => {
+                                setMessage(null)
+                            }, 5000)
+                        })
                 })
 
             }
@@ -148,6 +227,8 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={message} />
+            <Error message={errorMessage} />
             <Filter handleFilterChange={handleFilterChange} />
             <h2>add a new</h2>
 
