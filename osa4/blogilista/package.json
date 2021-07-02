@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --verbose"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,10 @@
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.9"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
