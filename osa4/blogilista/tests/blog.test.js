@@ -1,4 +1,10 @@
 const listHelper = require('../utils/list_helper')
+const supertest = require('supertest')
+const app = require('../index')
+const api = supertest(app)
+const mongoose = require('mongoose')
+
+const Blog = require('../models/blog')
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -166,4 +172,92 @@ describe('mostLikes', () => {
     })
   })
 
+})
+
+describe('supertest', () => {
+  
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+
+    await Blog.insertMany(blogs)
+    
+  })
+  test('getblogs', async () => {
+
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(6)
+    
+  })
+
+  test('contians id', async () => {
+
+    const response = await api.get('/api/blogs')
+    expect(response.body[0]).toHaveProperty('id')
+    expect(response.body[0]).not.toHaveProperty('_id')
+    
+  })
+
+
+  test('post works', async () => {
+
+
+    let newBlog = {
+      title: "testi",
+    author: "testi2",
+    url: "testi3",
+    likes: 5
+    }
+    await api.post('/api/blogs').send(newBlog)
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(7)
+    
+  })
+
+  test('value default to 0', async () => {
+
+
+    await Blog.deleteMany({})
+    let newBlog = {
+      title: "testi",
+    author: "testi2",
+    url: "testi3",
+    }
+    await api.post('/api/blogs').send(newBlog)
+    const response = await api.get('/api/blogs')
+    expect(response.body[0].likes).toEqual(0)
+
+
+    
+  })
+
+  test('Post requires title', async () => {
+
+
+    let newBlog = {
+    author: "testi2",
+    url: "testi3"
+    }
+    await api.post('/api/blogs').send(newBlog)
+    .expect(400)
+
+
+    
+  })
+  test('Post requires url', async () => {
+
+
+    let newBlog = {
+    author: "testi2",
+    title: "testi3"
+    }
+    await api.post('/api/blogs').send(newBlog)
+    .expect(400)
+
+
+    
+  })
+})
+
+afterAll(() => {
+  mongoose.connection.close()
 })
