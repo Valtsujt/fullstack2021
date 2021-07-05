@@ -5,6 +5,16 @@ const api = supertest(app)
 const mongoose = require('mongoose')
 
 const Blog = require('../models/blog')
+const User = require('../models/users')
+
+const loginUser = async () => {
+  const login = await api.post('/api/login').send({
+    username: "testi",
+    password: "salasana1"
+  })
+  return login.body.token
+}
+
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -53,7 +63,7 @@ const blogs = [
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
     likes: 2,
     __v: 0
-  }  
+  }
 ]
 
 test('dummy returns one', () => {
@@ -76,7 +86,7 @@ describe('total likes', () => {
     }
   ]
 
-  
+
   test('when list has only one blog equals the likes of that', () => {
     const result = listHelper.totalLikes(listWithOneBlog)
     expect(result).toBe(5)
@@ -149,7 +159,7 @@ describe('favorite blog', () => {
 
 describe('mostBlogs', () => {
 
-  
+
   test('return author with most blogs', () => {
     const result = listHelper.mostBlogs(blogs)
     expect(result).toEqual({
@@ -163,7 +173,7 @@ describe('mostBlogs', () => {
 
 describe('mostLikes', () => {
 
-  
+
   test('return author with most likes', () => {
     const result = listHelper.mostLikes(blogs)
     expect(result).toEqual({
@@ -175,86 +185,95 @@ describe('mostLikes', () => {
 })
 
 describe('supertest', () => {
-  
+
   beforeEach(async () => {
     await Blog.deleteMany({})
-
+    await User.deleteMany({})
     await Blog.insertMany(blogs)
-    
+    const user  = new User ({
+
+      username: "testi",
+      passwordHash:"$2b$10$pxDnDoXXI8Rm7aKooJgDgO7qKtptpG96TmWP0z.CZZq.b8BLZW1uq",
+      name: "nimi3",
+      blogs:[]
+      
+
+    })
+    await user.save()
   })
   test('getblogs', async () => {
-
-    const response = await api.get('/api/blogs')
+    const token = await loginUser()
+    const response = await api.get('/api/blogs').set('Authorization', 'bearer ' + token)
     expect(response.body).toHaveLength(6)
-    
+
   })
 
   test('contians id', async () => {
-
-    const response = await api.get('/api/blogs')
+    const token = await loginUser()
+    const response = await api.get('/api/blogs').set('Authorization', 'bearer ' + token)
     expect(response.body[0]).toHaveProperty('id')
     expect(response.body[0]).not.toHaveProperty('_id')
-    
+
   })
 
 
   test('post works', async () => {
-
+    const token = await loginUser()
 
     let newBlog = {
       title: "testi",
-    author: "testi2",
-    url: "testi3",
-    likes: 5
+      author: "testi2",
+      url: "testi3",
+      likes: 5
     }
-    await api.post('/api/blogs').send(newBlog)
-    const response = await api.get('/api/blogs')
+    const res1 = await api.post('/api/blogs').set('Authorization', 'bearer ' + token).send(newBlog)
+    const response = await api.get('/api/blogs').set('Authorization', 'bearer ' + token)
     expect(response.body).toHaveLength(7)
-    
+
   })
 
   test('value default to 0', async () => {
-
+    const token = await loginUser()
 
     await Blog.deleteMany({})
     let newBlog = {
       title: "testi",
-    author: "testi2",
-    url: "testi3",
+      author: "testi2",
+      url: "testi3",
     }
-    await api.post('/api/blogs').send(newBlog)
-    const response = await api.get('/api/blogs')
+    await api.post('/api/blogs').set('Authorization', 'bearer ' + token).send(newBlog)
+    const response = await api.get('/api/blogs').set('Authorization', 'bearer ' + token)
     expect(response.body[0].likes).toEqual(0)
 
 
-    
+
   })
 
   test('Post requires title', async () => {
-
+    const token = await loginUser()
 
     let newBlog = {
-    author: "testi2",
-    url: "testi3"
+      author: "testi2",
+      url: "testi3"
     }
-    await api.post('/api/blogs').send(newBlog)
-    .expect(400)
+    await api.post('/api/blogs').set('Authorization', 'bearer ' + token).send(newBlog)
+      .expect(400)
 
 
-    
+
   })
   test('Post requires url', async () => {
-
+   const token = await loginUser()
 
     let newBlog = {
-    author: "testi2",
-    title: "testi3"
+      author: "testi2",
+      title: "testi3"
     }
-    await api.post('/api/blogs').send(newBlog)
-    .expect(400)
+    await api.post('/api/blogs').set('Authorization', 'bearer ' + token).send(newBlog)
+      .expect(400)
 
 
-    
+
   })
 })
 

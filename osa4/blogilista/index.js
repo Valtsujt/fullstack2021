@@ -6,6 +6,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 require('dotenv').config()
 const blogRouter = require('./controllers/blogs')
+const userRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
 
 
@@ -20,8 +22,11 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true, us
 
 app.use(cors())
 app.use(express.json())
+app.use(middleware.tokenExtractor)
 
-app.use('/api/blogs', blogRouter)
+app.use('/api/blogs',middleware.userExtractor, blogRouter)
+app.use('/api/users', userRouter)
+app.use('/api/login',loginRouter)
 app.use(middleware.errorHandler)
 const PORT = 3003
 
