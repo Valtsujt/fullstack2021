@@ -111,8 +111,10 @@ const App = () => {
         console.log(blog)
         console.log(newBlog)
         try {
-            const responseData = await blogService.editBlog(newBlog, user)
-            setBlogs(blogs.map(blog => blog.id !== newBlog.id ? blog : responseData))
+            await blogService.editBlog(newBlog, user)
+            const b = await blogService.getAll(user)
+
+            setBlogs(b)
         } catch (error) {
             console.log(error)
             if (error.response) {

@@ -15,7 +15,7 @@ const BlogForm = ({ createBlog }) => {
                 <p />
                 url <input value={url} key="url" onChange={(event) => setUrl(event.target.value)} />
                 <p />
-                <button onClick={(event) => {
+                <button id="create-blog" onClick={(event) => {
                     createBlog(event, author, title, url)
                     setTitle('')
                     setAuthor('')

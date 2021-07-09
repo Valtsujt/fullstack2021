@@ -26,10 +26,10 @@ const Blog = (props) => {
     }
     if (show) {
         return (
-            <div style={blogStyle}>
+            <div className="blog-div"style={blogStyle}>
                 {blog.title} <button onClick={toggleShow}>hide</button> <br />
                 {blog.url} <br />
-        likes: {blog.likes} <button onClick={() => props.addLike(blog)}>like</button> <br />
+        likes: {blog.likes} <button id="like-button" onClick={() => props.addLike(blog)}>like</button> <br />
                 {blog.author} <br />
                 {deleteButton()}
             </div>
