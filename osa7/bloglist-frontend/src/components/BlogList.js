@@ -11,16 +11,10 @@ const BlogList = (props) => {
                     if (a.likes > b.likes) return -1
                     return 0
                 }).map(blog => {
-                    console.log(blog.user.username, props.user.loggedUsername)
-                    if (blog.user.username === props.user.loggedUsername) {
-                        return (
-                            <Blog key={blog.id} blog={blog} />
-                        )
-                    } else {
-                        return (
-                            <Blog key={blog.id} blog={blog} />
-                        )
-                    }
+
+                    return (
+                        <Blog key={blog.id} blog={blog} />
+                    )
 
                 })
             }

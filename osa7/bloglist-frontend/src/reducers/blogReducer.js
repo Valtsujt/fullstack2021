@@ -30,6 +30,17 @@ const blogReducer = (state = [], action) => {
         })
     }
 
+    if (action.type === 'COMMENT') {
+        return state.map(blogObject => {
+            if (blogObject.id === action.id) {
+                let newObject = { ...blogObject }
+                newObject.comments = newObject.comments.concat(action.comment)
+                return newObject
+            }
+            return blogObject
+        })
+    }
+
 
 
     return state
@@ -95,6 +106,19 @@ export const voteBlog = (blog, user) => {
 
     }
 
+}
+
+export const addComment = (id, comment, user) => {
+    return async dispatch => {
+        try {
+            await blogService.addComment(id, comment, user)
+            dispatch({ type: 'COMMENT', id: id, comment: comment })
+            dispatch(setNotification('comment added sucesfully', 5))
+        } catch (e) {
+            console.log(e)
+            dispatch(setError(e.response.data.error, 5))
+        }
+    }
 }
 
 export default blogReducer

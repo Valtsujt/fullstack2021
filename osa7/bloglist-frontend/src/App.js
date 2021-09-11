@@ -8,6 +8,30 @@ import { initializeBlogs } from './reducers/blogReducer'
 import LoginForm from './components/LoginForm'
 import { logout, fromStorage } from './reducers/userReducer'
 import BlogList from './components/BlogList'
+import UserList from './components/UserList'
+import BlogInfo from './components/BlogInfo'
+import {
+    //useParams,
+    //useHistory,
+    BrowserRouter as Router,
+    Switch, Route, Link
+} from 'react-router-dom'
+import UserInfo from './components/UserInfo'
+
+
+const Menu = (props) => {
+    const padding = {
+        paddingRight: 5
+    }
+    return (
+        <div>
+            <Link style={padding} to="/">Blogs</Link>
+            <Link style={padding} to="/users">users</Link>
+            {props.user.fullName} logged in <button onClick={props.logout}>logout</button>
+        </div>
+    )
+}
+
 const App = (props) => {
 
     useEffect(() => {
@@ -26,7 +50,6 @@ const App = (props) => {
     if (props.user.user === null) {
         return (
             <div>
-                <Notification />
                 <LoginForm></LoginForm>
             </div>
         )
@@ -34,14 +57,35 @@ const App = (props) => {
 
     return (
         <div>
-            <Notification />
-            <h1>Blogs</h1>
-            <p>{props.user.fullName} logged in <button onClick={props.logout}>logout</button></p>
-            <Togglable buttonLabel='create new blog'>
-                <BlogForm></BlogForm>
-            </Togglable>
-            <BlogList />
+
+
+
+            <Router>
+                <Menu user ={props.user} logout={props.logout}/>
+                <Notification />
+                <h1>Blogs</h1>
+                <Switch>
+                    <Route path="/users/:id">
+                        <UserInfo />
+                    </Route>
+                    <Route path="/users">
+                        <UserList />
+                    </Route>
+                    <Route path="/blogs/:id">
+                        <BlogInfo />
+                    </Route>
+                    <Route path="/">
+                        <Togglable buttonLabel='create new blog'>
+                            <BlogForm></BlogForm>
+                        </Togglable>
+                        <BlogList />
+                    </Route>
+
+
+                </Switch>
+            </Router>
         </div>
+
     )
 }
 const mapStateToProps = (state) => {
