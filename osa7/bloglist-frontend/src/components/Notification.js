@@ -1,30 +1,28 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-
+import { Alert } from '@material-ui/lab'
 const Notification = (props) => {
     // const style = {
     //     border: 'solid',
     //     padding: 10,
     //     borderWidth: 1
     // }
-    if (props.notification) {
-        let type = 'notification'
-        console.log(props)
-        console.log(props.error)
-        if(props.error) {
-            type = 'error'
-        }
-        return (
-            <div className={type}>
-                {props.notification}
-            </div>
-        )
-    } else {
-        return (
-            <div></div>
-        )
+    let type = 'success'
+    console.log(props)
+    console.log(props.error)
+    if (props.error) {
+        type = 'error'
     }
+    return (
+        <div>
+            {(props.notification &&
+                <Alert severity={type}>
+                    {props.notification}
+                </Alert>
+            )}
+        </div>)
+
 
 }
 

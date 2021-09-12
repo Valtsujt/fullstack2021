@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { createNewBlog } from '../reducers/blogReducer'
 import { connect } from 'react-redux'
+import { TextField, Button } from '@material-ui/core'
 const BlogForm = (props) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
@@ -18,14 +19,16 @@ const BlogForm = (props) => {
         <div>
             <h2>Create new</h2>
             <form>
-                title: <input value={title} key="title" onChange={(event) => setTitle(event.target.value)} />
-                <p />
-                author: <input value={author} key="author" onChange={(event) => setAuthor(event.target.value)} />
-
-                <p />
-                url <input value={url} key="url" onChange={(event) => setUrl(event.target.value)} />
-                <p />
-                <button id="create-blog" onClick={createBlog}>create</button>
+                <div>
+                    <TextField label="title" value={title} key="title" onChange={(event) => setTitle(event.target.value)} />
+                </div>
+                <div>
+                    <TextField label="author" value={author} key="author" onChange={(event) => setAuthor(event.target.value)} />
+                </div>
+                <div>
+                    <TextField label="url" value={url} key="url" onChange={(event) => setUrl(event.target.value)} />
+                </div>
+                <Button variant="contained" color="primary" id="create-blog" onClick={createBlog}>create</Button>
             </form>
         </div>
     )

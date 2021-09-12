@@ -1,13 +1,21 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { deleteBlog, voteBlog } from '../reducers/blogReducer'
 import { connect } from 'react-redux'
-
+import {
+    TableRow,
+    TableCell,
+    Link
+} from '@material-ui/core'
 const Blog = (props) => {
     const blog = props.blog
 
     return (
-        <p><Link to={'/blogs/' + blog.id}>{ blog.title}</Link></p>
+        <TableRow>
+            <TableCell>
+                <Link color="inherit" component={RouterLink} to={'/blogs/' + blog.id}>{blog.title}</Link>
+            </TableCell>
+        </TableRow>
     )
 
 

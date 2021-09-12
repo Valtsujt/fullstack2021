@@ -1,7 +1,16 @@
 
 import { connect } from 'react-redux'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+    Table,
+    TableContainer,
+    Paper,
+    TableBody,
+    TableRow,
+    TableCell,
+    Link
+} from '@material-ui/core'
 const UserList = (props) => {
     const blogsToAuthor = (blogs) => {
         const ar = blogs.reduce(function (rv, x) {
@@ -12,28 +21,36 @@ const UserList = (props) => {
         console.log(ar)
         return (
 
-            <table>
-                <tr>
-                    <th></th>
-                    <th>blogs created</th>
-                </tr>
-                {  Object.keys(ar).map((key) => {
-                    console.log(key)
-                    console.log(ar[key])
-                    console.log(ar[key].length)
-                    return (
-                        <tr key={key}>
-                            <th> <Link to={'/users/' + ar[key][0].user.id}>{ar[key][0].user.name}</Link></th>
-                            <th>{ar[key].length}</th>
-                        </tr>
-                    )
+            <TableContainer component={Paper}>
+                <Table className='BlogList'>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>
 
-                })}
-            </table>
+                            </TableCell>
+                            <TableCell>
+                                blogs created
+                            </TableCell>
+                        </TableRow>
+                        {Object.keys(ar).map((key) => {
+                            console.log(key)
+                            console.log(ar[key])
+                            console.log(ar[key].length)
+                            return (
+                                <TableRow key={key}>
+                                    <TableCell>  <Link color="inherit" component={RouterLink} to={'/users/' + ar[key][0].user.id}>{ar[key][0].user.name}</Link></TableCell>
+                                    <TableCell>{ar[key].length}</TableCell>
+                                </TableRow>
+                            )
+
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>)
 
 
 
-        )
+
     }
 
     return (

@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { login } from '../reducers/userReducer'
 import { connect } from 'react-redux'
+
+import { TextField, Button } from '@material-ui/core'
 const LoginForm = (props) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -15,12 +17,12 @@ const LoginForm = (props) => {
         <div>
             <h2>Log in to application</h2>
             <form>
-                username: <input key="username" onChange={(event) => setUsername(event.target.value)} />
+                <TextField color="inherit" label="username" key="username" onChange={(event) => setUsername(event.target.value)} />
                 <p />
-                password: <input key="password" onChange={(event) => setPassword(event.target.value)} />
+                <TextField color="inherit" label="password" key="password" onChange={(event) => setPassword(event.target.value)} />
 
                 <p />
-                <button onClick={loginUser}>log in</button>
+                <Button color="inherit" variant="contained" onClick={loginUser}>log in</Button>
             </form>
         </div>
     )

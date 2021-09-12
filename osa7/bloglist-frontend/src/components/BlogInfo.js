@@ -1,10 +1,10 @@
-import React, { useState }from 'react'
+import React, { useState } from 'react'
 import {
     useParams,
 } from 'react-router-dom'
-import { deleteBlog, voteBlog,addComment } from '../reducers/blogReducer'
+import { deleteBlog, voteBlog, addComment } from '../reducers/blogReducer'
 import { connect } from 'react-redux'
-
+import { Button, TextField, Link } from '@material-ui/core'
 const BlogInfo = (props) => {
     const id = useParams().id
     const blog = props.blogs.find(blog => blog.id === id)
@@ -17,7 +17,7 @@ const BlogInfo = (props) => {
     const deleteButton = () => {
         if (props.user.loggedUsername === blog.user.username) {
             return (
-                <button onClick={() => props.deleteBlog(blog, props.user.user)}>Delete</button>
+                <Button variant="contained" onClick={() => props.deleteBlog(blog, props.user.user)}>Delete</Button>
             )
         }
 
@@ -42,13 +42,15 @@ const BlogInfo = (props) => {
     return (
         <div className="blog-div">
             <h2>{blog.title} </h2> <br />
-            <a href={blog.url} >{blog.url}</a> <br />
-                likes: {blog.likes} <button id="like-button" onClick={() => props.voteBlog(blog, props.user.user)}>like</button> <br />
+            <Link color="inherit" href={blog.url} >{blog.url}</Link> <br />
+            <div className="likeContainer">
+                likes: {blog.likes} <Button variant="contained" id="like-button" onClick={() => props.voteBlog(blog, props.user.user)}>like</Button> <br />
+            </div>
             <p>added by {blog.author}</p> <br />
             {deleteButton()}
             <h2>comments</h2>
-            <input key="comment" onChange={(event) => setComment(event.target.value)} />
-            <button onClick={() => props.addComment(blog.id, comment, props.user.user)}>add comment</button>
+            <TextField label="Comment" key="comment" onChange={(event) => setComment(event.target.value)} />
+            <Button variant="contained" onClick={() => props.addComment(blog.id, comment, props.user.user)}>add comment</Button>
             {commentList()}
 
         </div>
