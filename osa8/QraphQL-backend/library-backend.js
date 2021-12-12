@@ -42,7 +42,7 @@ const typeDefs = gql`
     type Mutation {
         addBook(
             title: String!
-            published: Int
+            published: Int!
             authorName: String!
             authorBorn: Int
             genres: [String]
@@ -101,7 +101,8 @@ const resolvers = {
             // }
 
             if (args.genre) {
-                return await Book.find({ genre: { $in: [args.genre] } }.populate('author'))
+                //console.log(args.genre)
+                return await Book.find({ genres: { $in: [args.genre] } }).populate('author')
             }
             return await Book.find({}).populate('author')
         },
@@ -119,11 +120,16 @@ const resolvers = {
             let result = await Author.find({})
             let books = await Book.find({})
 
-            console.log(result)
-            console.log(books)
+            //console.log(result)
+            //console.log(books)
             result = result.map(a => {
                 author = a
-                author.bookCount = books.filter(book => book.author.str === a._id.str).length
+                bc= books.filter(book => {
+
+                    return book.author.toString() === a._id.toString()
+                }).length
+                   
+                author.bookCount = bc
                 return author
             })
             return result

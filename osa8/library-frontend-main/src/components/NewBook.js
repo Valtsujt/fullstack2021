@@ -24,7 +24,7 @@ const NewBook = (props) => {
     event.preventDefault()
     let intpub = parseInt(published)
     console.log('add book...')
-    createBook({ variables: {title, intpub, author,genres}})
+    createBook({ variables: {title:title, published:intpub, authorName: author,genres:genres}})
     setTitle('')
     setPublished('')
     setAuthor('')
