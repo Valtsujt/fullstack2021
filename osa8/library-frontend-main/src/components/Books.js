@@ -1,25 +1,53 @@
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { useQuery } from '@apollo/client'
-
+import { useSubscription } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
-
+import { BOOK_ADDED } from '../queries'
+import { useLazyQuery } from '@apollo/client';
 const Books = (props) => {
   const [genre, setGenre] = useState(null)
-  const result = useQuery(ALL_BOOKS)
-  
+  //const result = useQuery(ALL_BOOKS)
+  const [getBooks, { loading }] = useLazyQuery(ALL_BOOKS, {
+    fetchPolicy: "network-only"
+})
+  const [books, setBooks] = useState([])
+  //let books = []
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData)
+      
+      
+      console.log("RAEWR")
+      setBooks(books.concat(subscriptionData.data.bookAdded))
+      window.alert(subscriptionData.data.bookAdded.title + " was just added!")
+
+    }
+  })
+
+  useEffect(() => {
+    console.log("useeffect called")
+    console.log("s")
+    const fetch = async () => {
+      const result = await getBooks()
+      if (result.data) {
+        //setBooks(result.data.allBooks)
+        //books = result.data.allBooks
+        setBooks(result.data.allBooks)
+      }
+    }
+
+    fetch() 
+    
+    
+
+  }, []) // eslint-disable-line
   if (!props.show) {
     return null
   }
 
-  if (result.loading) {
+  if (loading) {
     return <div>loading...</div>
-  }
-  console.log(result)
-  let books = []
-  if (result.data) {
-    books = result.data.allBooks
   }
 
   return (
@@ -38,8 +66,7 @@ const Books = (props) => {
             </th>
           </tr>
           {books.map(a => {
-            console.log(genre)
-            if(genre === null || a.genres.includes(genre)) {
+            if (genre === null || a.genres.includes(genre)) {
               return (<tr key={a.title}>
                 <td>{a.title}</td>
                 <td>{a.author.name}</td>
@@ -57,7 +84,7 @@ const Books = (props) => {
       }).flat().filter((value, index, self) => self.indexOf(value) === index).map(genre => {
         return <button key={genre} onClick={() => setGenre(genre)}>{genre}</button>
       }
-      
+
       )
 
 

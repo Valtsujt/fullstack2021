@@ -70,3 +70,19 @@ export const FAVGENRE = gql`
       }
     }
 `
+
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+      published
+      id
+      author{
+        name
+        born
+      }
+      genres
+    }
+  }
+  
+`

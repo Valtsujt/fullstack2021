@@ -1,4 +1,4 @@
-const { ApolloServer, UserInputError,AuthenticationError, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, AuthenticationError, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 
 
@@ -7,7 +7,8 @@ const { v1: uuid } = require('uuid')
  * Saattaisi olla järkevämpää assosioida kirja ja sen tekijä tallettamalla kirjan yhteyteen tekijän nimen sijaan tekijän id
  * Yksinkertaisuuden vuoksi tallennamme kuitenkin kirjan yhteyteen tekijän nimen
 */
-
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 
 const typeDefs = gql`
     type Book {
@@ -61,7 +62,9 @@ const typeDefs = gql`
             password: String!
         ): Token    
       }
-  
+    type Subscription {
+        bookAdded: Book!
+    }    
 `
 // const authors = () => {
 //     return books.map(item => item.author).filter((value, index, self) => self.indexOf(value) === index)
@@ -124,11 +127,11 @@ const resolvers = {
             //console.log(books)
             result = result.map(a => {
                 author = a
-                bc= books.filter(book => {
+                bc = books.filter(book => {
 
                     return book.author.toString() === a._id.toString()
                 }).length
-                   
+
                 author.bookCount = bc
                 return author
             })
@@ -177,6 +180,7 @@ const resolvers = {
 
             try {
                 let value = await book.save()
+                pubsub.publish('BOOK_ADDED', { bookAdded: value })
                 return value
             } catch (error) {
                 throw new UserInputError(error.message, {
@@ -233,7 +237,12 @@ const resolvers = {
             return { value: jwt.sign(userForToken, JWT_SECRET) }
         },
 
-    }
+    },
+    Subscription: {
+        bookAdded: {
+          subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+        },
+      },
 }
 
 const server = new ApolloServer({
@@ -252,6 +261,7 @@ const server = new ApolloServer({
     }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
     console.log(`Server ready at ${url}`)
+    console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
