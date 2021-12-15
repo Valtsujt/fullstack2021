@@ -90,12 +90,6 @@ const EntryForm = ({ onSubmit, onCancel }: Props) => {
                             component={TextField}
                         />
                         <Field
-                            label="Occupation"
-                            placeholder="Occupation"
-                            name="occupation"
-                            component={TextField}
-                        />
-                        <Field
                             label="dischargeDate"
                             placeholder="YYYY-MM-DD"
                             name="dischargeDate"
